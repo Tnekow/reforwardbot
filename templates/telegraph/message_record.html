@@ -1,0 +1,36 @@
+<h3>消息记录</h3>
+{% for msg in messages %}
+    <p>
+        <b>时间:</b> {{ msg.time }}<br>
+        <b>类型:</b> {{ msg.type }}
+    </p>
+
+    {% if msg.forward_from %}
+    <p><i>转发自: {{ msg.forward_from }} 于 {{ msg.forward_date }}</i></p>
+    {% endif %}
+
+    {% if msg.type == 'text' %}
+        <p>{{ msg.content }}</p>
+    {% elif msg.type == 'photo' %}
+        {% if msg.telegraph_url %}
+            <img src="{{ msg.telegraph_url }}">
+        {% else %}
+            <img src="{{ msg.content }}">
+        {% endif %}
+        {% if msg.caption %}
+            <p><i>{{ msg.caption }}</i></p>
+        {% endif %}
+    {% elif msg.type == 'video' %}
+        <p><a href="{{ msg.content }}">查看视频</a></p>
+    {% elif msg.type == 'document' %}
+        <p><a href="{{ msg.content }}">{{ msg.filename|default('下载文件') }}</a></p>
+    {% elif msg.type == 'voice' %}
+        <p><a href="{{ msg.content }}">收听语音消息</a></p>
+    {% endif %}
+
+    {% if msg.caption %}
+        <p><i>说明: {{ msg.caption }}</i></p>
+    {% endif %}
+
+    <hr>
+{% endfor %} 

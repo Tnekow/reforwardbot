@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>消息记录</title>
+</head>
+<body>
+    {% for message in messages %}
+    <div class="message">
+        <div class="time">{{ message.time }}</div>
+        
+        {% if message.type == 'text' %}
+            <p>{{ message.content }}</p>
+        {% endif %}
+        
+        {% if message.type == 'photo' %}
+            {% if message.is_gif %}
+                <img src="{{ message.content }}" alt="GIF" style="max-width: 100%;" data-type="gif" data-w="100%" data-ratio="1"/>
+            {% else %}
+                <img src="{{ message.content }}" alt="图片" style="max-width: 100%;" data-w="100%" data-ratio="1"/>
+            {% endif %}
+            {% if message.caption %}
+                <p>{{ message.caption }}</p>
+            {% endif %}
+        {% endif %}
+        
+        {% if message.type == 'video' %}
+            <video src="{{ message.content }}" controls style="max-width: 100%;"></video>
+        {% endif %}
+        
+        {% if message.type == 'document' %}
+            <p>文件: <a href="{{ message.content }}">{{ message.filename }}</a></p>
+        {% endif %}
+        
+        {% if message.type == 'voice' %}
+            <audio src="{{ message.content }}" controls></audio>
+        {% endif %}
+        
+        {% if message.forward_from %}
+            <div class="forward-info">
+                转发自: {{ message.forward_from }}<br>
+                转发时间: {{ message.forward_date }}
+            </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</body>
+</html> 

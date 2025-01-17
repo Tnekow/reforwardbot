@@ -1,0 +1,12 @@
+python-telegram-bot==20.8
+aiofiles
+aiohttp
+python-dotenv 
+telegraph 
+Pillow 
+beautifulsoup4 
+jinja2 
+lottie
+cairosvg  # 用于将 SVG 转换为 PNG 
+imageio
+imageio-ffmpeg  # 用于读取视频文件 
