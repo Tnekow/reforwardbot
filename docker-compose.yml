@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  telegram-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: telegram-bot
+    env_file: 
+      # 这里映射的是你的 .env 文件
+      - .env
+    volumes:
+      # 挂载 .env 文件到容器内，同时可以挂载其他配置或目录
+      - ./media:/app/media  # media 是你的项目中存储数据文件的目录
+    restart: always

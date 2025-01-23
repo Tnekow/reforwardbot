@@ -57,6 +57,21 @@ telegraph.create_account(short_name='message_recorder_bot')
 # 确保目录存在
 os.makedirs(MEDIA_DIR, exist_ok=True)
 
+async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("抱歉，我无法理解您的命令或您无权访问该功能。")
+
+async def restrict_access(update: Update) -> bool:
+    """限制访问，仅允许特定用户和群组"""
+    allowed_chat_ids = [CHAT_ID]  # 允许访问的用户或群组 ID 列表，CHAT_ID 来自 .env 配置
+
+    chat_id = update.effective_chat.id
+    print(allowed_chat_ids, chat_id)
+    if str(chat_id) not in allowed_chat_ids:
+        await update.message.reply_text('抱歉，你没有权限使用此机器人。')
+        return False
+    return True
+
+
 async def upload_to_telegraph(html_content: str) -> str:
     """上传内容到 Telegraph 并返回链接"""
     formatted_content = html_content.replace('<html>', '').replace('</html>', '')
@@ -93,6 +108,8 @@ async def upload_to_telegram(file_data: BytesIO) -> str:
     return None
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not await restrict_access(update):
+        return  # 立即停止处理此命令
     chat_id = update.effective_chat.id
     # 初始化该用户的消息存储
     message_store[chat_id] = []
@@ -222,6 +239,9 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     del message_store[chat_id]
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not await restrict_access(update):
+        return
+
     chat_id = update.effective_chat.id
     
     if chat_id not in message_store:
@@ -712,7 +732,8 @@ def main() -> None:
     application.add_handler(CommandHandler('end', end))
     application.add_handler(CommandHandler('start_telegraph', start_telegraph))
     application.add_handler(CommandHandler('end_telegraph', end_telegraph))
-    
+    application.add_handler(MessageHandler(filters.COMMAND, unknown))
+
     # 添加消息处理器，根据测试状态选择不同的处理函数
     application.add_handler(MessageHandler(
         filters.ALL & ~filters.COMMAND,
