@@ -89,7 +89,11 @@ class Wechat:
 
     def send_draft(self, html_file, thumb_media_id):
         logger.info(f"开始发送草稿: {html_file}, 缩略图ID: {thumb_media_id}")
-        
+        header_dict = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
+                'Content-Type': 'application/json; charset=utf-8'   # 重点看这儿
+        }
+
         if not os.path.exists(html_file):
             logger.error(f"HTML文件不存在: {html_file}")
             raise FileNotFoundError(f"HTML file not found: {html_file}")
@@ -115,10 +119,10 @@ class Wechat:
                     "thumb_media_id": thumb_media_id
                 }]
             }
-            
+            send_data = bytes(json.dumps(data, ensure_ascii=False).encode('utf-8'))
             logger.info("开始发送草稿请求...")
             logger.info(f"发送的数据: {data}")
-            response = requests.post(url, json=data)
+            response = requests.post(url, headers=header_dict,data=send_data)
             logger.info(f"草稿请求响应状态码: {response.status_code}")
             
             if response.status_code != 200:
